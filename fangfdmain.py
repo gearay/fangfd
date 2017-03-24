@@ -36,45 +36,52 @@ if __name__ == "__main__":
     # with open('creditpage.html') as html:
     # 	soup = Pagesoup(html)
     # 	print(soup.mcreditbad())
-    total = []
-    total.append(['小区','小区主页','户型','平米','价格','描述'])
+    # total = []
+    # total.append(['小区','小区主页','户型','平米','价格','描述'])
     with open('arealist.txt', 'r') as list:
-        try:
-            line =list.readline()
-            
-            while line:
-                # print(line)                              
-                # time.sleep(random.uniform(15, 17))
-                stype, sline, sstop = (line.split(","))
-                url = 'http://esf.fang.com/'+stype+'-'+sline+'-'+sstop+'/h316'
-                # print(url)
-                html = getHtml(url)
-                html = zlib.decompress(html ,16+zlib.MAX_WBITS)
-                html = html.decode('gb2312','ignore')
-                soup = Pagesoup(html)
-                pagen = soup.yeshu()
-                for j in range(0,pagen+1):
-                	urli = 'http://esf.fang.com/'+stype+'-'+sline+'-'+sstop+'/h316-i3'+str(j)
-                	html = getHtml(urli)
+    	with open('esflist.txt', 'w+') as output:
+	        try:
+	            line =list.readline().strip()
+	            
+	            while line:
+	                # print(line)
+	                
+	                # output = open('esflist.txt', 'w+')
+	                # time.sleep(random.uniform(15, 17))
+	                stype, sline, sstop = (line.split(","))
+	                url = 'http://esf.fang.com/'+stype+'-'+sline+'-'+sstop+'/h316'
+	                print(url)
+	                html = getHtml(url)
 	                html = zlib.decompress(html ,16+zlib.MAX_WBITS)
 	                html = html.decode('gb2312','ignore')
-	                soup = Pagesoup(html)               
-	                for i in soup.soupdata.find_all(attrs={"class": "info rel floatr"}):
-	                	fangtitle = i.find_all(attrs = {"class": "title"})[0].a.contents[0]
-	                	fangtype = i.find(attrs = {"class": "mt12"}).contents[0].strip()
-	                	fangjiage = i.find(attrs = {"class":"price"}).contents[0]
-	                	fangpingmi = i.find(attrs = {"class": "area alignR"}).p.contents[0]
-	                	fangxiaoqu = i.find(attrs ={"class": "mt10"}).span.contents[0]
-	                	xiaoquurl = i.find(attrs ={"class": "mt10"}).a.get("href")
-	                	fanglist = [fangxiaoqu,xiaoquurl,fangtype,fangpingmi,fangjiage,fangtitle,xiaoquurl]
-	                	total.append(fanglist)
+	                soup = Pagesoup(html)
+	                pagen = soup.yeshu()
+	                for j in range(0,pagen+1):
+	                	urli = 'http://esf.fang.com/'+stype+'-'+sline+'-'+sstop+'/h316-i3'+str(j)
+	                	print(urli)
+	                	html = getHtml(urli)
+		                html = zlib.decompress(html ,16+zlib.MAX_WBITS)
+		                html = html.decode('gb2312','ignore')
+		                soup = Pagesoup(html)               
+		                for i in soup.soupdata.find_all(attrs={"class": "info rel floatr"}):
+		                	fangtitle = i.find_all(attrs = {"class": "title"})[0].a.contents[0]
+		                	fangtype = i.find(attrs = {"class": "mt12"}).contents[0].strip()
+		                	fangjiage = i.find(attrs = {"class":"price"}).contents[0]
+		                	fangpingmi = i.find(attrs = {"class": "area alignR"}).p.contents[0]
+		                	fangxiaoqu = i.find(attrs ={"class": "mt10"}).span.contents[0]
+		                	xiaoquurl = i.find(attrs ={"class": "mt10"}).a.get("href")
+		                	# newline = fangxiaoqu+","+xiaoquurl+","+fangtype+","+fangpingmi+","+fangjiage+","+fangtitle,"/n"
+		                	# output.write(newline
+		                	fanglist = [fangxiaoqu,";",xiaoquurl,";",fangtype,";",fangpingmi,";",fangjiage,";",fangtitle,'\r\n']
+		                	output.writelines(fanglist)
+		                	# output.close()
 
 
-                line =list.readline() 
-        except IndexError as e:
-            print(e)
-            print('抓了%d个' %(len(total)-1))
-    if len(total) > 1:
-        writeexcel('房子列表.xlsx', total)
-    else:
-        print('什么都抓不到')
+	                line =list.readline().strip()
+	        except IndexError as e:
+	            print(e)
+	            print('抓了%d个' %(len(total)-1))
+    # if len(total) > 1:
+    #     writeexcel('房子列表.xlsx', total)
+    # else:
+    #     print('什么都抓不到')
